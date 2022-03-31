@@ -4,7 +4,7 @@ Discord bot for finding the price of a cryptocurrency or NFT collection
 ## Querying a cryptocurrency
 `!<cryptocurrency>`
 ### By symbol
-![image](https://user-images.githubusercontent.com/57625180/161114862-3b0ac428-89ac-4723-853d-c8e142c5b62b.png)
+![image](https://user-images.githubusercontent.com/57625180/161119592-37e4338c-8862-44a9-8f44-80c259cebbc0.png)
 ![image](https://user-images.githubusercontent.com/57625180/161116039-a047ecbd-fe32-4631-9b7e-ded23fa437e0.png)
 
 
