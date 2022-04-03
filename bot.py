@@ -93,7 +93,7 @@ async def on_message(message):
             await message.channel.send(f"Failed to find <{watch_string}>")
             return
         if all((crypto_details, nft_details)):
-            if crypto_details.get('cap') > nft_details.get('cap'):
+            if crypto_details.get('cap') > nft_details.get('cap_usd'):
                 if float(modifiers[0]) > crypto_details.get('USD'):
                     await message.channel.send(f"Current price for {watch_string} (${crypto_details.get('USD')}) must be higher than alert price (${modifiers[0]})")
                     return
@@ -103,8 +103,8 @@ async def on_message(message):
                     msg = generate_crypto_message(crypto_details, colour)
                     await message.channel.send(embed=msg)
             else:
-                if float(modifiers[0]) > crypto_details.get('USD'):
-                    await message.channel.send(f"Current price for {watch_string} (${crypto_details.get('USD')}) must be higher than alert price (${modifiers[0]})")
+                if float(modifiers[0]) > nft_details.get('floor'):
+                    await message.channel.send(f"Current price for {watch_string} ({nft_details.get('floor')} ETH) must be higher than alert price ({modifiers[0]} ETH)")
                     return
                 if nft_watchlist(watch_string, modifiers, str(message.author), str(message.author.id), message.channel.id):
                     await message.channel.send(f"Added alert for {watch_string} at floor price {modifiers[0]} (requested by <@{str(message.author.id)}>) - watching for 30 days")
@@ -263,12 +263,12 @@ def generate_metrics_message(details, colour):
     embed.add_field(name=chr(173), value=chr(173))
     if details.get('btc_dominance'):
         m_btc = f"{round(details.get('btc_dominance'),2)}%"
-        if details.get('btc_dominance_24h_change'): m_btc += f" ({get_volume_message(details.get('btc_dominance_24h_change'),3,'%')})"
+        if details.get('btc_dominance_24h_change'): m_btc += f" (24h:{get_volume_message(details.get('btc_dominance_24h_change'),3,'%')})"
     else:
         m_btc = 'Unknown'
     if details.get('eth_dominance'):
         m_eth = f"{round(details.get('eth_dominance'),2)}%"
-        if details.get('eth_dominance_24h_change'): m_eth += f" ({get_volume_message(details.get('eth_dominance_24h_change'),3,'%')})"
+        if details.get('eth_dominance_24h_change'): m_eth += f" (24h:{get_volume_message(details.get('eth_dominance_24h_change'),3,'%')})"
     else:
         m_eth = 'Unknown'
     embed.add_field(
@@ -284,12 +284,12 @@ def generate_metrics_message(details, colour):
     embed.add_field(name=chr(173), value=chr(173))
     if details.get('defi_cap'):
         m_defi = f"${add_commas(round(round_to_n(details.get('defi_cap'),6)))}"
-        if details.get('defi_cap_24h_change'): m_defi += f" ({get_volume_message(details.get('defi_cap_24h_change'),3,' ETH')})"
+        if details.get('defi_cap_24h_change'): m_defi += f" (24h:{get_volume_message(details.get('defi_cap_24h_change'),3,'%')})"
     else:
         m_defi = 'Unknown'
     if details.get('stablecoin_cap'):
         m_stable = f"${add_commas(round(round_to_n(details.get('stablecoin_cap'),6)))}"
-        if details.get('stablecoin_cap_24h_change'): m_stable += f" ({get_volume_message(details.get('stablecoin_cap_24h_change'),3,' ETH')})"
+        if details.get('stablecoin_cap_24h_change'): m_stable += f" (24h:{get_volume_message(details.get('stablecoin_cap_24h_change'),3,'%')})"
     else:
         m_stable = 'Unknown'
     embed.add_field(
@@ -305,7 +305,7 @@ def generate_metrics_message(details, colour):
     embed.add_field(name=chr(173), value=chr(173))
     if details.get('market_cap_usd'):
         m_usd = f"${add_commas(round(round_to_n(details.get('market_cap_usd'),6)))}"
-        if details.get('market_cap_usd_24h_change'): m_usd += f" ({get_volume_message(details.get('market_cap_usd_24h_change'),3,'%')})"
+        if details.get('market_cap_usd_24h_change'): m_usd += f" (24h:{get_volume_message(details.get('market_cap_usd_24h_change'),3,'%')})"
     else:
         m_usd = 'Unknown'
     embed.add_field(
@@ -681,8 +681,6 @@ async def nft_alert(alert_data):
     found = {}
     for alert in alert_data:
         slug = alert[1]
-        #data = get_nft_data(slug)
-        #price = data.get('floor')
         if found.get(slug):
             price = found.get(slug)
         else:
@@ -690,9 +688,8 @@ async def nft_alert(alert_data):
             found[slug] = price
         channel_id = alert[9]
         requester_id = alert[3]
-        if price > alert[4]:
-            continue
-        await send_nft_alert(channel_id, requester_id, alert[1], price, alert[4], str(alert[0]))
+        if price <= alert[4]:
+            await send_nft_alert(channel_id, requester_id, alert[1], price, alert[4], str(alert[0]))
     
     for alert in alert_data:
         decrement_watch_limit(str(alert[0]), 'nft')
@@ -789,8 +786,7 @@ def coin_watchlist(item, modifiers, requester, requester_id, channel_id):
 
 def add_to_coin_watchlist(item, alert_floor, requester, requester_id, channel_id):
     
-    #search_interval = interval * 60 # 30 minutes
-    default_watch_duration = 0.5 * 24 * 30 # 1 month of every 5 minutes
+    default_watch_duration = 0.5 * 24 * 30 # 1 month of every 2 hours
 
     with sqlite3.connect(DB_PATH) as conn:
         cur = conn.cursor()
@@ -830,9 +826,8 @@ async def coin_alert(alert_data):
             found[symbol] = price
         channel_id = alert[9]
         requester_id = alert[3]
-        if price > alert[4]:
-            continue
-        await send_coin_alert(channel_id, requester_id, alert[1], price, alert[4], str(alert[0]))
+        if price <= alert[4]:
+            await send_coin_alert(channel_id, requester_id, alert[1], price, alert[4], str(alert[0]))
     
     for alert in alert_data:
         decrement_watch_limit(str(alert[0]), 'coin')
