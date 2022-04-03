@@ -21,7 +21,7 @@ Discord bot for finding the price of a cryptocurrency or NFT collection
 ## Global metrics
 `!metrics`
 
-![image](https://user-images.githubusercontent.com/57625180/161115836-a3d442e7-24e0-4921-8385-9dc7cc9af46f.png)
+![image](https://user-images.githubusercontent.com/57625180/161449668-093aab74-9e1c-4426-ac1c-896800405479.png)
 
 ## Set up alerts
 ### Cryptocurrencies
