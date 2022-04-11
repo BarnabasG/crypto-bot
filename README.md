@@ -38,11 +38,11 @@ Later:
 
 ![image](https://user-images.githubusercontent.com/57625180/162838299-18144ec0-fd53-4482-9a0f-e6efbefc19aa.png)
 
-For searches with a valid cryptocurrency and NFT collection
+For searches with a valid cryptocurrency and NFT collection...
 
 ![image](https://user-images.githubusercontent.com/57625180/161118403-4c25f261-ddde-4e80-a54f-3aaffc5f0b54.png)
 
-The higher market cap option is taken
+...the higher market cap option is taken
 
 ![image](https://user-images.githubusercontent.com/57625180/161118578-35b9f391-5a7f-4a69-b961-7e65e6c50e84.png)
 
