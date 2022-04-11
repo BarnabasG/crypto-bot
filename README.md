@@ -32,7 +32,11 @@ Discord bot for finding the price of a cryptocurrency or NFT collection
 ### NFTs
 `!watch <NFT collection> <floor price in ethereum>`
 
-![image](https://user-images.githubusercontent.com/57625180/161118226-c5621685-8f25-4835-9501-573d3188f6d2.png)
+![image](https://user-images.githubusercontent.com/57625180/162838219-c1fa0d58-9713-4fd0-a68e-dc77694e08bb.png)
+
+Later:
+
+![image](https://user-images.githubusercontent.com/57625180/162838299-18144ec0-fd53-4482-9a0f-e6efbefc19aa.png)
 
 For searches with a valid cryptocurrency and NFT collection
 
